@@ -20,7 +20,10 @@ class Communication:
         self.motion_type = 0
         self.flight_mode = None
         self.mission = None
-            
+        
+	self.coordinate_frame = 1
+        self.target_motion.coordinate_frame = self.coordinate_frame
+
         '''
         ros subscribers
         '''
@@ -58,16 +61,20 @@ class Communication:
 
     def construct_target(self, x=0, y=0, z=0):
         target_raw_pose = PositionTarget()
-        target_raw_pose.coordinate_frame = self.coordinate_frame 
-
+        target_raw_pose.coordinate_frame = self.coordinate_frame
+	
+	
         if self.coordinate_frame == 1:
             target_raw_pose.position.x = x
             target_raw_pose.position.y = y
             target_raw_pose.position.z = z
+            #print("coordinate_frame=1")
+
         else:
             target_raw_pose.position.x = -y
             target_raw_pose.position.y = x
             target_raw_pose.position.z = z
+            #print("coordinate_frame=0")
 
         if self.mission == 'takeoff':
             target_raw_pose.type_mask = 4096
