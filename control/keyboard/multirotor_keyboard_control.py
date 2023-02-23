@@ -24,7 +24,7 @@ To all drones  (press g to control the leader)
 
 w/x : increase/decrease forward  
 a/d : increase/decrease leftward 
-i/, : increase/decrease yaw 
+i/, : increase/decrease upward 
 j/l : increase/decrease yaw
 r   : return home
 t/y : arm/disarm
