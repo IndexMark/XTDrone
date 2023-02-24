@@ -126,3 +126,6 @@ K. Xiao, L. Ma, S. Tan, Y. Cong , X. Wang, "Implementation of UAV Coordination B
 ### 合作
 
 如果想与XTDrone团队建立合作，请联系肖昆<robin_shaun@foxmail.com>。
+
+
+USTB ME 814略微修改版本
