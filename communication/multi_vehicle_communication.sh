@@ -2,7 +2,7 @@
 iris_num=0
 typhoon_h480_num=0
 solo_num=0
-plane_num=5
+plane_num=2
 rover_num=0
 standard_vtol_num=0
 tiltrotor_num=0
