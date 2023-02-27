@@ -18,8 +18,8 @@
         <arg name="verbose" value="$(arg verbose)"/>
         <arg name="paused" value="$(arg paused)"/>
     </include>
-     <!-- rover_0 -->
-     <group ns="rover_0">
+     <!-- solo_0 -->
+     <group ns="solo_0">
         <!-- MAVROS and vehicle configs -->
             <arg name="ID" value="0"/>
             <arg name="ID_in_group" value="0"/>
@@ -28,12 +28,12 @@
         <include file="$(find px4)/launch/single_vehicle_spawn_xtd.launch">
             <arg name="x" value="0"/>
             <arg name="y" value="0"/>
-            <arg name="z" value="0"/>
+            <arg name="z" value="1"/>
             <arg name="R" value="0"/>
             <arg name="P" value="0"/>
             <arg name="Y" value="0"/>
-            <arg name="vehicle" value="rover"/>
-            <arg name="sdf" value="rover_with_lidar_stereo"/>
+            <arg name="vehicle" value="solo"/>
+            <arg name="sdf" value="solo"/>
             <arg name="mavlink_udp_port" value="18570"/>
             <arg name="mavlink_tcp_port" value="4560"/>
             <arg name="ID" value="$(arg ID)"/>
