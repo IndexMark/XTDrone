@@ -1,4 +1,3 @@
-[TOC]
 
 # XTDrone
 [项目源地址](https://github.com/robin-shaun/XTDrone)
@@ -167,7 +166,7 @@ ___
 
 可以直接下载XTDrone的压缩包[📎PX4_Firmware.zip](https://www.yuque.com/attachments/yuque/0/2022/zip/985678/1672148620266-ad2f680e-e9ec-4be0-9746-914552829832.zip)，解压后记得删除原有的`build`文件再进行编译
 
-或者下我上传的这个已经删掉`build`文件的版本[百度网盘]()
+或者下我上传的这个已经删掉`build`文件的版本[百度网盘](https://pan.baidu.com/s/1XRU6vh-qW9wsJsrRf4U3oA?pwd=2233)
 ___
 下载好后，解压放在` ～/`目录下(打开终端，输入`pwd`，显示的就是` ～/`目录)
 
@@ -253,6 +252,7 @@ To install _QGroundControl_:
 	chmod +x ./QGroundControl.AppImage
 	./QGroundControl.AppImage  (or double click)
 	```
+
 ___
 ### 六、XTDrone源码下载(USTB ME 814版本)
  1. 打开一个新终端
@@ -556,7 +556,7 @@ ___
 
 #### 单目摄像头的sdf标签解释
 
-详细解释->[知乎]()
+详细解释->[知乎](https://zhuanlan.zhihu.com/p/437704085)
 
 可与**上方详细版本**对照查看￪
 
@@ -565,7 +565,7 @@ ___
 
 ### 二、UWB
 
-
+[原版本](https://github.com/valentinbarral/gazebosensorplugins)
 
 
 
