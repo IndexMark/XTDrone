@@ -144,7 +144,9 @@ Gazebo有很多开源的模型文件，一些需要的模型文件上传到了�
 
 --> 请点击[📎models.zip](https://www.yuque.com/attachments/yuque/0/2022/zip/985678/1670494695523-2a18624d-545e-4552-a3b1-714ac5d649c2.zip)
 
-将该附件解压缩后放在`~/.gazebo`中，此时在`~/.gazebo/models/`路径下可以看到很多模型。如果不做这一步，之后运行Gazebo仿真，可能会缺模型，这时会自动下载，Gazebo模型服务器在国外，自动下载会比较久。
+将该附件解压缩后放在`~/.gazebo`中，此时在`~/.gazebo/models/`路径下可以看到很多模型。如果不做这一步，之后运行Gazebo仿真，可能会缺模型，这时会自动下载，Gazebo模型服务器在国外，自动下载会比较久
+___
+
 ### 四、MAVROS安装
 注意，mavros-extras一定别忘记装，否则视觉定位将无法完成
 ```
@@ -154,6 +156,7 @@ wget https://gitee.com/robin_shaun/XTDrone/raw/master/sitl_config/mavros/install
 sudo chmod a+x ./install_geographiclib_datasets.sh
 sudo ./install_geographiclib_datasets.sh #这步需要装一段时间
 ```
+___
 ### 五、PX4配置
 #### 1.下载&编译
 ___
@@ -215,7 +218,8 @@ system_status: 3
 
 **(实际这里暂不影响目前的功能使用，可先跳过，后续走不通再回来检查)**
 #### 3.安装地面站QGroundControl
-点此[安装链接](https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html)
+* 点此[安装链接](https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html)
+* 后续**固定翼**要打开地面站，通讯正常连接的情况下才能起飞
 ___
 #### QGroundControl安装(同上面的链接，以应对打不开的情况)
 **Ubuntu Linux**
@@ -242,14 +246,14 @@ To install _QGroundControl_:
 
 1.  Download [QGroundControl.AppImage](https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage).(备用:[百度网盘]())
 2.  Install (and run) using the terminal commands:
-    
-    ```
-    chmod +x ./QGroundControl.AppImage
-    ./QGroundControl.AppImage  (or double click)
-    ```
+	```
+	chmod +x ./QGroundControl.AppImage
+	./QGroundControl.AppImage  (or double click)
+	```
 ___
 ### 六、XTDrone源码下载(USTB ME 814版本)
-#### 1. 打开一个新终端
+ 1. 打开一个新终端
+ 
 	```
 	git clone -b ustb-demo https://github.com/IndexMark/XTDrone.git
 	cd XTDrone
@@ -272,12 +276,113 @@ ___
 
 * 这一步添加了带**多个单目摄像头**以及**UWB**的模型.sdf文件，以及一个带9个彩墙的世界
 
-#### 2. 打开一个新终端，重新编译PX4固件
-```
-cd ~/PX4_Firmware
-make px4_sitl_default gazebo
-```
+ 2. 打开一个新终端，重新编译PX4固件
+	```
+	cd ~/PX4_Firmware
+	make px4_sitl_default gazebo
+	```
 编译好后会出现Gazebo界面，关闭即可
 
+___
 ### 七、UWB插件安装
+打开一个新的终端，安装**UWB功能包**以及对应的**自定义消息**
+
+(进入`xtdrone/src`文件夹)
+
+```
+cd ~/xtdrone/src
+git clone -b ustb-demo https://github.com/IndexMark/gazebosensorplugins.git
+git clone -b ustb-demo https://github.com/IndexMark/gtec_rosmsgs.git
+cd ..
+catkin_make
+```
+___
+### 八、试运行
+1. 打开一个终端，启动仿真环境
+	```
+	roslaunch px4 rby_wall.launch
+	```
+	打开*Gazebo*后，可以见到几面彩墙
+
+	用**鼠标滚轮**进行缩放，便能看见2个带**多个单目摄像头视觉**的Iris旋翼无人机，还有3个**UWB**用的**锚点**
+	
+	![gazebo启动]()
+
+	打开一个终端，查看ROS话题列表
+	```
+	rostopic list
+	```
+		
+	![ROS Topic]()
+	
+	* `/gtec/toa/ranging`为**标签**到各个**锚点**的距离
+	* `/gtec/toa/ranging_vehicle`为**标签**到**其他载具**的距离，(标签在载具中心的情况下，可认为是标签之间的距离)
+	
+	打开两个终端，分别查看具体的话题消息
+	```
+	rostopic echo /gtec/toa/ranging
+	```
+	```
+	rostopic echo /gtec/toa/ranging_vehicle
+	```
+	![ranging]()
+	![ranging_vehicle]()
+2. 用键盘控制无人机飞行
+
+	在一个终端运行
+	```
+	cd ~/PX4_Firmware
+	roslaunch px4 indoor1.launch
+	```
+-   注意，用ctrl+c关闭仿真进程，有可能没有把Gazebo的相关进程关干净，这样再启动仿真时可能会报错。如果出现这种情况，可以用killall -9 gzclient，killall -9 gzserver 这两个命令强行关闭gazebo所有进程。
+
+	Gazebo启动后，在另一个终端运行（注意要等Gazebo完全启动完成，或者可能脚本会报错）
+	```
+	cd ~/XTDrone/communication/
+	python multirotor_communication.py iris 0
+	```
+	与0号iris建立通信后，在另一个终端运行
+	```
+	cd ~/XTDrone/control/keyboard
+	python multirotor_keyboard_control.py iris 1 vel
+	```
+	便可以通过键盘控制1架iris的解锁/上锁(arm/disarm)，修改飞行模式，飞机速度等。使用v起飞利用的是takeoff飞行模式，相关参数（起飞速度、高度）要在rcS中设置。一般可以使用offboard模式起飞，这时起飞速度要大于0.3m/s才能起飞(即：upward velocity 需要大于0.3)。注意，飞机要先解锁才能起飞！飞到一定高度后可以切换为‘hover’模式悬停，再运行自己的飞行脚本，或利用键盘控制飞机。
+
+推荐起飞流程，按i把向上速度加到0.3以上，再按b切offboard模式，最后按t解锁。
+
+注意，现在mavros话题与服务前带有了无人机名字，如：/iris_0/mavros/state
+
+3. 仿真器基础特性说明
+
+	-   仿真是可以暂停的，如下面的视频所示，点Gazebo的暂停键
+
+		此处为语雀视频卡片，点击链接查看：[仿真过程可以暂停.mp4](https://www.yuque.com/xtdrone/manual_cn/basic_config_13#HGbpx)
+
+	-   Gazebo最下面一行的real time factor是指仿真时间与真实时间的比值，通常是1，越小说明仿真越慢。通常情况下，随着仿真的进行，CPU占有率会变高，real time factor会缓慢下降，下降情况与电脑性能有关。FPS是指仿真器渲染的帧率，与显卡性能密切相关，这个值不能过低，否则不能满足视觉算法的需求，很多情况下FPS过低是显卡驱动安装存在问题导致。
+
+	-   Gazebo的world文件越复杂，加载时间越长，有时一直加载不出来，是因为本地路径缺少了world文件中所需的一些model文件。
+
+	-   Gazebo中可以用鼠标拖动物体移动，但这种操作不适用于无人机，因为会导致PX4的状态估计出错，更多有关“瞬移”无人机可见[https://www.yuque.com/xtdrone/manual_cn/accelerate_sim_and_large_swarm](https://www.yuque.com/xtdrone/manual_cn/accelerate_sim_and_large_swarm)
+
+	  
+
+	-   有时启动Gazebo会出现奇怪的问题，这时可以通过killall -9 gzclient 和killall -9 gzserver彻底关闭Gazebo，再启动roslaunch尝试解决，或通过重启电脑或docker尝试解决。
+
+	  
+
+	-   由于不同版本的Gazebo对光照的设置不同，因此有些场景在一些版本中光照可能不合适，您可以手动调整删除一些光照源。
+
+	-   所有以indoor开头的场景，都有一个不可见的天花板，它具有碰撞属性，因此无人机不能飞出室内，更多关于天花板的知识见[此文档](https://www.yuque.com/xtdrone/manual_cn/building_editor#nNdW8)。
+
+到此，仿真平台基础配置完成！
+___
+## 配置说明
+### 一、摄像头
+
+### 二、UWB
+
+
+
+
+
 
