@@ -1,4 +1,5 @@
 
+
 # XTDrone
 **[项目源地址](https://github.com/robin-shaun/XTDrone)
 [gitee](https://gitee.com/robin_shaun/XTDrone)
@@ -327,7 +328,6 @@ ___
 	rostopic echo /gtec/toa/ranging_vehicle
 	```
 	<img src="./images/ranging.png" width="440" height="360" />
-
 	<img src="./images/ranging_vehicle.png" width="440" height="360" />
 
 2. 用键盘控制无人机飞行
@@ -337,7 +337,9 @@ ___
 	cd ~/PX4_Firmware
 	roslaunch px4 indoor1.launch
 	```
--   注意，用ctrl+c关闭仿真进程，有可能没有把Gazebo的相关进程关干净，这样再启动仿真时可能会报错。如果出现这种情况，可以用killall -9 gzclient，killall -9 gzserver 这两个命令强行关闭gazebo所有进程。
+-   注意，用ctrl+c关闭仿真进程，有可能没有把Gazebo的相关进程关干净，这样再启动仿真时可能会报错
+-  可以先关闭Gazebo，再ctrl+c关闭终端进程
+- 如果出现这种情况，可以用killall -9 gzclient，killall -9 gzserver 这两个命令强行关闭gazebo所有进程。
 
 	Gazebo启动后，在另一个终端运行（注意要等Gazebo完全启动完成，或者可能脚本会报错）
 	```
@@ -379,8 +381,185 @@ ___
 
 到此，仿真平台基础配置完成！
 ___
-## 配置说明
+## 单目摄像头与UWB配置说明
+
+- **强烈建议**先熟悉和参考XTDrone官方文档中[不同无人机的配置与控制](https://www.yuque.com/xtdrone/manual_cn/vehicle_config)，看完再进行下面的配置
+
 ### 一、摄像头
+
+- 单目摄像头的原始 **.sdf** 与可以在`~/PX4_Firmware/Tools/stil_gazebo/models/monocular_camera`目录下找到
+
+- 模型含有单个单目摄像头的情况下，可直接在模型的 **.sdf**文件里直接引用，添加关节joint
+
+	```
+	<include>
+	      <uri>model://monocular_camera</uri>
+	      <pose>0 0 -0.05 0 0.5 0</pose>
+	</include>
+	    <joint name="monocular_down_joint" type="fixed">
+	      <child>monocular_camera::link</child>
+	      <parent>base_link</parent>
+	      <axis>
+	        <xyz>0 0 1</xyz>
+	        <limit>
+	          <upper>0</upper>
+	          <lower>0</lower>
+	        </limit>
+	      </axis>
+	    </joint>
+	```
+但针对**多个单目摄像头**的情况，如果直接引用多个摄像头，会导致**多个摄像头名称相同**，从而发布的**话题名相同**产生**冲突**
+
+因此需要在模型的 **.sdf**文件中复制多个**单目摄像头原始文件**`monocular_camera.sdf`的原始代码，并进行相应的编号
+
+* 例：对于`camera N `(**N**代表摄像头的**编号**)
+
+	```
+	<!-- For Camera N -->
+		<model name='monocular_cameraN'>
+		    <pose>0 0 -0.05 0 1.57079632679 0</pose>
+		      <link name='link'>
+			<inertial>
+			  <mass>0.001</mass>
+			  <inertia>
+			  <ixx>4.15e-6</ixx>
+			  <ixy>0</ixy>
+			  <ixz>0</ixz>
+			  <iyy>2.407e-6</iyy>
+			  <iyz>0</iyz>
+			  <izz>2.407e-6</izz>
+			  </inertia>
+			</inertial>
+			<visual name='visual'>
+			  <geometry>
+			    <box>
+			      <size>0.01 0.01 0.01</size>
+			    </box>
+			  </geometry>
+			</visual>
+			<sensor name='camera' type='camera'>
+			  <camera name='__default__'>
+			    <horizontal_fov>2.0944</horizontal_fov>
+			    <image>
+			      <width>720</width>
+			      <height>480</height>
+			    </image>
+			    <clip>
+			      <near>0.01</near>
+			      <far>150</far>
+			    </clip>
+			    <noise>
+			      <type>gaussian</type>
+			      <mean>0.0</mean>
+			      <stddev>0.001</stddev>
+			    </noise>
+			    <lens>
+			      <type>custom</type>
+			      <custom_function>
+			        <c1>1.05</c1>
+			        <c2>4</c2>
+			        <f>1</f>
+			        <fun>tan</fun>
+			      </custom_function>
+			      <scale_to_hfov>1</scale_to_hfov>
+			      <cutoff_angle>3.1415</cutoff_angle>
+			    </lens>
+			  </camera>
+			  <always_on>1</always_on>
+			  <update_rate>30</update_rate>
+			  <visualize>1</visualize>
+			  <plugin name='camera_plugin' filename='libgazebo_ros_camera.so'>
+			      <robotNamespace></robotNamespace>
+			      <alwaysOn>true</alwaysOn>
+			      <imageTopicName>image_raw</imageTopicName>
+			      <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+			      <updateRate>30.0</updateRate>
+			      <cameraName>cameraN</cameraName>
+			      <frameName>/camera_link</frameName>
+			      <CxPrime>640</CxPrime>
+			      <Cx>640</Cx>
+			      <Cy>360</Cy>
+			      <hackBaseline>0</hackBaseline>
+			      <focalLength>369.502083</focalLength>
+			      <distortionK1>0.0</distortionK1>
+			      <distortionK2>0.0</distortionK2>
+			      <distortionK3>0.0</distortionK3>
+			      <distortionT1>0.0</distortionT1>
+			      <distortionT2>0.0</distortionT2>
+			  </plugin>
+			</sensor>
+			<self_collide>0</self_collide>
+			<kinematic>0</kinematic>
+		      </link>
+		  </model>
+
+	    <joint name="monocular_down_jointN" type="fixed">
+	      <child>monocular_cameraN::link</child>
+	      <parent>base_link</parent>
+	      <axis>
+	        <xyz>0 0 1</xyz>
+	        <limit>
+	          <upper>0</upper>
+	          <lower>0</lower>
+	        </limit>
+	      </axis>
+	    </joint>
+
+	```
+
+	太长不看？来个**简洁版本**：
+
+	```
+	<!-- For Camera N -->
+	
+		<model name='monocular_cameraN'>
+		
+		    <pose>0 0 -0.05 0 1.57079632679 0</pose>
+		      <link name='link'>
+			……
+			  <plugin name='camera_plugin' filename='libgazebo_ros_camera.so'>
+			      ……
+			      <updateRate>30.0</updateRate>
+			      
+			      <cameraName>cameraN</cameraName>
+			      
+			      <frameName>/camera_link</frameName>
+			      ……
+			  ……
+			<kinematic>0</kinematic>
+		      </link>
+		  </model>
+
+	    <joint name="monocular_down_jointN" type="fixed">
+	      <child>monocular_cameraN::link</child>
+	      
+	      ……
+	    </joint>
+
+	```
+	主要对**四个标签**进行编号即可
+	```
+	1.<model name='monocular_cameraN'>
+
+	2.<cameraName>cameraN</cameraName>
+
+	3.<joint name="monocular_down_jointN" type="fixed">
+
+	4.<child>monocular_cameraN::link</child>
+	```
+* 修改完模型 **.sdf**文件后，也要修改同文件夹下的**model.config**文件：
+	* \<model>下的\<name>要对应 **.sdf**文件的名字
+	* \<sdf version>要与 **.sdf**文件中的对应，名称也一样
+	* 作者与描述不影响使用
+
+#### 单目摄像头的sdf标签解释
+
+详细解释->[知乎]()
+
+可与**上方详细版本**对照查看￪
+
+
+
 
 ### 二、UWB
 
