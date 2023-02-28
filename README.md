@@ -326,9 +326,9 @@ ___
 	```
 	rostopic echo /gtec/toa/ranging_vehicle
 	```
-	<img src="./images/ranging.png" width="640" height="360" />
+	<img src="./images/ranging.png" width="440" height="360" />
 
-	<img src="./images/ranging_vehicle.png" width="640" height="360" />
+	<img src="./images/ranging_vehicle.png" width="440" height="360" />
 
 2. 用键盘控制无人机飞行
 
