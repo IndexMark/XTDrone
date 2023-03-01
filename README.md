@@ -321,7 +321,7 @@ ___
 	<img src="./images/ros_topic.png" width="640" height="360" />	
 	
 	* `/gtec/toa/ranging`为**标签**到各个**锚点**的距离
-	* `/gtec/toa/ranging_vehicle`为**标签**到**其他载具**的距离，(标签在载具中心的情况下，可认为是标签之间的距离)
+	* `/gtec/toa/ranging_vehicle`为**标签**到**无人机**的距离，(标签在载具中心的情况下，可认为是标签之间的距离)
 	
 	打开两个终端，分别查看具体的话题消息
 	```
@@ -806,8 +806,139 @@ ___
 ---
 ### 二、UWB
 
-[原版本](https://github.com/valentinbarral/gazebosensorplugins)
+[原版本](https://github.com/valentinbarral/gazebosensorplugins)是基于测试数据得到的结果，这里根据信号的强弱，把误差作线性化处理
 
+#### 依赖
+* 库`libignition-math4-dev` 和 `libgazebo9-dev` 
+* 自定义消息类型`gtec_msgs`
 
+#### 使用方法
+该插件具有三种状态：**LOS**、**NLOS Soft**和**NLOS**
 
+-   **LOS** (Line of Sight): 在这种情况下，***tag*** 和 ***anchor*** 之间没有障碍物且没有信号衰减
+-   **NLOS Soft** (Non Line of Sight Soft): 在这种情况下，***tag*** 和 ***anchor*** 之间因有**一个**薄障碍物或信号衰减，导致接收功率低于 LOS 状态
+- ~~NLOS Hard (Non Line of Sight Hard): 在这种情况下，tag和anchor之间的障碍物太多，直接信号无法到达接收器。 但在这种情况下，信号在一堵墙内反弹后，有一条从tag到anchor的路径。 因此，估计的距离对应于这条新路径，因此总是比设备之间的实际距离长~~
+原版本的NLOS Hard模式考虑的是在室内小空间里存在信号反射的情况
+但目前仿真环境中用于远距离百米级测据，不考虑信号反射的情况，故对这一状态进行了删减
+
+-   **NLOS**（Non Line of Sight）：Tag 和 anchor 距离太远或它们之间有太多障碍物
+
+通过添加下面的代码到模型的 **.sdf**或 **.urdf**文件，把**UWB插件**添加到*Gazebo*对应的模型中
+
+(该仿真环境中，模型文件夹在`~/PX4_Firmware/Tools/sitl_gazebo/models/`)
+
+* 修改完模型 **.sdf**文件后，也要修改同文件夹下的**model.config**文件：
+	* \<model>下的\<name>要对应 **.sdf**文件的名字
+	* \<sdf version>要与 **.sdf**文件中的对应，名称也一样
+	* 作者与描述不影响使用
+
+```
+<plugin name='libgtec_uwb_plugin' filename='libgtec_uwb_plugin.so'>
+      <update_rate>25</update_rate>
+      <nlosSoftWallWidth>3</nlosSoftWallWidth>
+      <tag_x_offset>0</tag_x_offset>
+      <tag_y_offset>0</tag_y_offset>
+      <tag_z_offset>0</tag_z_offset>
+      <tag_link>tag_0</tag_link>
+      <anchor_prefix>uwb_anchor</anchor_prefix>
+      <all_los>false</all_los>
+      <tag_id>0</tag_id>
+      <maxDBDistance>14</maxDBDistance>
+   
+      <MaxPosNoise>300</MaxPosNoise>
+      <MinPosNoise>100</MinPosNoise>
+      <MaxRSS>-80</MaxRSS>
+      <MinRSS>-95</MinRSS>
+      <MaxDisDecay>5</MaxDisDecay>
+
+	
+      
+      <vehicle_prefix>iris</vehicle_prefix>
+      <PubRangeTopic>true</PubRangeTopic>
+      <PubRangeVehicleTopic>true</PubRangeVehicleTopic>
+
+      <NoObstacleRadius>0.236</NoObstacleRadius>
+      
+</plugin>
+```
+##### 标签解释
+
+- **\<update_rate>**: 消息频率(每秒发出消息的数量)
+
+- **\<nlosSoftWallWidth>**:  NLOS Soft状态下的障碍物最大厚度，即信号最大穿透障碍物的厚度
+
+- **\<tag_x_offset>**: 标签到无人机原点x方向的距离偏移值 (在标签相互测距模式下偏移值均需置0)
+
+- **\<tag_y_offset>**: 标签到无人机原点y方向的距离偏移值
+
+- **\<tag_z_offset>**: 标签到无人机原点z方向的距离偏移值
+
+- **\<tag_link>**: tag的链接，没有的话把父节点作为链接对象
+
+- **\<anchor_prefix>**: 锚点前缀，用于在标签基站模式中标记锚点
+
+- **\<all_los>**: 是否默认LOS状态，即忽略障碍物和距离引起的信号衰减
+
+- **\<tag_id>**: 设定标签的ID编号(确保唯一)
+
+- **\<maxDBDistance>**: 最远的通讯距离 (DB是DataBased，原本是基于测试数据的最大距离，~~懒得改名了~~)
+
+- **\<MaxPosNoise>**: 最大定位噪声(对应最弱信号下)，单位: mm
+
+- **\<MinPosNoise>**: 最小定位噪声(对应最强信号下)，单位: mm
+
+- **\<MaxRSS>**: 最大接收信号强度，单位: dB
+
+- **\<MinRSS>**: 最小接收信号强度， 单位:dB
+
+- **\<MaxDisDecay>**: 在最远有效通讯距离时的信号衰减值(中途的距离衰减值为从0到Max的线性插值)
+
+- **\<vehicle_prefix>**: 无人机名称，用于标签相互测距模式
+
+- **\<PubRangeTopic>**: 是否开启标签基站模式，并发布相应的话题
+
+- **\<PubRangeVehicleTopic>**: 是否开启标签相互测距模式，并发布相应的话题
+
+- **\<NoObstacleRadius>**: 忽略障碍物的半径，填无人机的包络半径即可
+(由于程序原理的问题，没有这个参数的话，程序会把无人机之间的距离识别为障碍物厚度，这里只影响障碍物识别，不影响测距)
+
+添加该插件到模型中后，模型便带上了UWB的**标签tag**，及其对应的**tagID**，便可以在**标签相互测距模式**中得到相互之间的测距数据。
+
+但对于**标签基站模式**，还需要在*Gazebo*的世界中添加**基站锚点anchor**的模型，通过编辑对应的`.world`文件进行添加
+唯一的要求是模型的名称必须以 **\<anchor_prefix>** 开头，后接 **整数**，为其对应的 **ID编号**，例如：
+(该仿真环境中，世界文件夹在`~/PX4_Firmware/Tools/sitl_gazebo/worlds/`)
+
+```
+<model name="uwb_anchor0">
+      <pose>0 0 1.5 0 0 0</pose>
+      <static>1</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 0.2 0.2</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+</model>
+```
+
+#### 发布的话题
+- **/gtec/toa/ranging**
+	- anchorId: 锚点基站的ID编号
+	- tagId: 标签的ID编号
+	- range: 测距值，单位: mm
+	- seq: 队列
+	- rss: 接收信号强度  单位
+	- errorEstimation: 测据误差，单位: mm
+	
+
+- **/gtec/toa/ranging_vehicle**
+	- anchorId: 无人机的ID编号
+	- tagId: 标签的ID编号
+	- range: 测距值，单位: mm
+	- seq: 队列
+	- rss: 接收信号强度  单位
+	- errorEstimation: 测据误差，单位: mm
 
