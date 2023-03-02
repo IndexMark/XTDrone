@@ -926,7 +926,7 @@ ___
 ```
 
 #### 发布的话题
->- **/gtec/toa/ranging**
+- **/gtec/toa/ranging**
 	- anchorId: 锚点基站的ID编号
 	- tagId: 标签的ID编号
 	- range: 测距值，单位: mm
@@ -935,7 +935,7 @@ ___
 	- errorEstimation: 测据误差，单位: mm
 	
 
->- **/gtec/toa/ranging_vehicle**
+- **/gtec/toa/ranging_vehicle**
 	- anchorId: 无人机的ID编号
 	- tagId: 标签的ID编号
 	- range: 测距值，单位: mm
