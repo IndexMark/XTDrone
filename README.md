@@ -1,4 +1,4 @@
-<div id="sidebar"><a href="./README_gitee.md" target="_blank"><font color=#0000FF size=5px >[gitee版本]<font></center><a></div>
+<div id="sidebar"><a href="./README_gitee.md" target="_blank"><font color=#0000FF size=5px >[点我切换gitee版本]<font></center><a></div>
 
 # XTDrone
 [项目源地址](https://github.com/robin-shaun/XTDrone)
