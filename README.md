@@ -818,7 +818,8 @@ ___
 -   **LOS** (Line of Sight): 在这种情况下，***tag*** 和 ***anchor*** 之间没有障碍物且没有信号衰减
 -   **NLOS Soft** (Non Line of Sight Soft): 在这种情况下，***tag*** 和 ***anchor*** 之间因有**一个**薄障碍物或信号衰减，导致接收功率低于 LOS 状态
 - ~~NLOS Hard (Non Line of Sight Hard): 在这种情况下，tag和anchor之间的障碍物太多，直接信号无法到达接收器。 但在这种情况下，信号在一堵墙内反弹后，有一条从tag到anchor的路径。 因此，估计的距离对应于这条新路径，因此总是比设备之间的实际距离长~~
-原版本的NLOS Hard模式考虑的是在室内小空间里存在信号反射的情况
+
+	原版本的NLOS Hard模式考虑的是在室内小空间里存在信号反射的情况
 但目前仿真环境中用于远距离百米级测据，不考虑信号反射的情况，故对这一状态进行了删减
 
 -   **NLOS**（Non Line of Sight）：Tag 和 anchor 距离太远或它们之间有太多障碍物
