@@ -281,7 +281,7 @@ Before installing _QGroundControl_ for the first time:
 
 To install _QGroundControl_:
 
-1.  Download [QGroundControl.AppImage](https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage).(备用:[百度网盘](链接：https://pan.baidu.com/s/1p-v0e_gABHJy_V_9a5TPIg?pwd=2233))
+1.  Download [QGroundControl.AppImage](https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage).(备用:[百度网盘](https://pan.baidu.com/s/1p-v0e_gABHJy_V_9a5TPIg?pwd=2233))
 2.  Install (and run) using the terminal commands:
 	```
 	chmod +x ./QGroundControl.AppImage
