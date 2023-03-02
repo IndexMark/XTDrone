@@ -291,10 +291,10 @@ ___
 ### 七、UWB插件安装
 打开一个新的终端，安装**UWB功能包**以及对应的**自定义消息**
 
-(进入`xtdrone/src`文件夹)
+(进入`xtdrone_ws/src`文件夹)
 
 ```
-cd ~/xtdrone/src
+cd ~/xtdrone_ws/src
 git clone -b ustb-demo https://github.com/IndexMark/gazebosensorplugins.git
 git clone -b ustb-demo https://github.com/IndexMark/gtec_rosmsgs.git
 cd ..
