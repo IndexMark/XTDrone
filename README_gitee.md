@@ -292,7 +292,7 @@ ___
  1. 打开一个新终端
  
 	```
-	git clone -b ustb-demo https://github.com/IndexMark/XTDrone.git
+	git clone -b ustb-demo https://gitee.com/idxmark/XTDrone.git
 	cd XTDrone
 	git submodule update --init --recursive
 	# 修改启动脚本文件
@@ -328,8 +328,8 @@ ___
 
 ```
 cd ~/xtdrone_ws/src
-git clone -b ustb-demo https://github.com/IndexMark/gazebosensorplugins.git
-git clone -b ustb-demo https://github.com/IndexMark/gtec_rosmsgs.git
+git clone -b ustb-demo https://gitee.com/idxmark/gazebosensorplugins.git
+git clone -b ustb-demo https://gitee.com/idxmark/gtec_rosmsgs.git
 cd ..
 catkin_make
 ```
