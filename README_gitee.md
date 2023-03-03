@@ -33,7 +33,6 @@
 			- [发布的话题](#发布的话题)
 
 
-
 # XTDrone
 [项目源地址](https://github.com/robin-shaun/XTDrone)
 
@@ -281,7 +280,7 @@ Before installing _QGroundControl_ for the first time:
 
 To install _QGroundControl_:
 
-1.  Download [QGroundControl.AppImage](https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage).(备用:[百度网盘]())
+1.  Download [QGroundControl.AppImage](https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage).(备用:[百度网盘](https://pan.baidu.com/s/1p-v0e_gABHJy_V_9a5TPIg?pwd=2233))
 2.  Install (and run) using the terminal commands:
 	```
 	chmod +x ./QGroundControl.AppImage
@@ -293,7 +292,7 @@ ___
  1. 打开一个新终端
  
 	```
-	git clone -b ustb-demo https://gitee.com/idxmark/XTDrone.git
+	git clone -b ustb-demo https://github.com/IndexMark/XTDrone.git
 	cd XTDrone
 	git submodule update --init --recursive
 	# 修改启动脚本文件
@@ -329,8 +328,8 @@ ___
 
 ```
 cd ~/xtdrone_ws/src
-git clone -b ustb-demo https://gitee.com/idxmark/gazebosensorplugins.git
-git clone -b ustb-demo https://gitee.com/idxmark/gtec_rosmsgs.git
+git clone -b ustb-demo https://github.com/IndexMark/gazebosensorplugins.git
+git clone -b ustb-demo https://github.com/IndexMark/gtec_rosmsgs.git
 cd ..
 catkin_make
 ```
@@ -598,6 +597,25 @@ ___
 可与**上方详细版本**对照查看￪
 
 ---
+
+**\<sensor>标签**适用于所有的传感器 参考->[知乎](https://zhuanlan.zhihu.com/p/437702957)
+
+摄像头用到的的标签：
+
+1. **\<always_on>**(可选)
+
+	用于指定传感器是否一直进行更新，数据类型为bool，默认值为0或false
+	如果此子元素值设置为 true，则传感器会根据更新频率一直进行更新
+
+2. **\<update_rate>**(可选)
+
+	用于设置传感器的更新频率（即生成传感器数据的频率），数据类型为double，默认值为0
+	如果未指定此子元素，则传感器将会在每个周期生成数据
+
+3. **\<visualize>**(可选)
+
+	用于设置是否将传感器在GUI中进行可视化，数据类型为bool，默认值为0或false即不对传感器进行可视化
+	如果此元素值设置为 true，则会将传感器在GUI中进行可视化
 
 **\<camera>** 主标签
 
@@ -898,43 +916,26 @@ ___
 ```
 ##### 标签解释
 
-- **\<update_rate>**: 消息频率(每秒发出消息的数量)
+> - **\<update_rate>**: 消息频率(每秒发出消息的数量)
+> - **\<nlosSoftWallWidth>**:  NLOS Soft状态下的障碍物最大厚度，即信号最大穿透障碍物的厚度
+> - **\<tag_x_offset>**: 标签到无人机原点x方向的距离偏移值 (在标签相互测距模式下偏移值均需置0)
+> - **\<tag_y_offset>**: 标签到无人机原点y方向的距离偏移值
+> - **\<tag_z_offset>**: 标签到无人机原点z方向的距离偏移值
+> - **\<tag_link>**: tag的链接，没有的话把父节点作为链接对象
+> - **\<anchor_prefix>**: 锚点前缀，用于在标签基站模式中标记锚点
+> - **\<all_los>**: 是否默认LOS状态，即忽略障碍物和距离引起的信号衰减
+> - **\<tag_id>**: 设定标签的ID编号(确保唯一)
+> - **\<maxDBDistance>**: 最远的通讯距离 (DB是DataBased，原本是基于测试数据的最大距离，~~懒得改名了~~)
+> - **\<MaxPosNoise>**: 最大定位噪声(对应最弱信号下)，单位: mm
+> - **\<MinPosNoise>**: 最小定位噪声(对应最强信号下)，单位: mm
+> - **\<MaxRSS>**: 最大接收信号强度，单位: dB
+> - **\<MinRSS>**: 最小接收信号强度， 单位:dB
+> - **\<MaxDisDecay>**: 在最远有效通讯距离时的信号衰减值(中途的距离衰减值为从0到Max的线性插值)
+> - **\<vehicle_prefix>**: 无人机名称，用于标签相互测距模式
+> - **\<PubRangeTopic>**: 是否开启标签基站模式，并发布相应的话题
+> - **\<PubRangeVehicleTopic>**: 是否开启标签相互测距模式，并发布相应的话题
+> - **\<NoObstacleRadius>**: 忽略障碍物的半径，填无人机的包络半径即可
 
-- **\<nlosSoftWallWidth>**:  NLOS Soft状态下的障碍物最大厚度，即信号最大穿透障碍物的厚度
-
-- **\<tag_x_offset>**: 标签到无人机原点x方向的距离偏移值 (在标签相互测距模式下偏移值均需置0)
-
-- **\<tag_y_offset>**: 标签到无人机原点y方向的距离偏移值
-
-- **\<tag_z_offset>**: 标签到无人机原点z方向的距离偏移值
-
-- **\<tag_link>**: tag的链接，没有的话把父节点作为链接对象
-
-- **\<anchor_prefix>**: 锚点前缀，用于在标签基站模式中标记锚点
-
-- **\<all_los>**: 是否默认LOS状态，即忽略障碍物和距离引起的信号衰减
-
-- **\<tag_id>**: 设定标签的ID编号(确保唯一)
-
-- **\<maxDBDistance>**: 最远的通讯距离 (DB是DataBased，原本是基于测试数据的最大距离，~~懒得改名了~~)
-
-- **\<MaxPosNoise>**: 最大定位噪声(对应最弱信号下)，单位: mm
-
-- **\<MinPosNoise>**: 最小定位噪声(对应最强信号下)，单位: mm
-
-- **\<MaxRSS>**: 最大接收信号强度，单位: dB
-
-- **\<MinRSS>**: 最小接收信号强度， 单位:dB
-
-- **\<MaxDisDecay>**: 在最远有效通讯距离时的信号衰减值(中途的距离衰减值为从0到Max的线性插值)
-
-- **\<vehicle_prefix>**: 无人机名称，用于标签相互测距模式
-
-- **\<PubRangeTopic>**: 是否开启标签基站模式，并发布相应的话题
-
-- **\<PubRangeVehicleTopic>**: 是否开启标签相互测距模式，并发布相应的话题
-
-- **\<NoObstacleRadius>**: 忽略障碍物的半径，填无人机的包络半径即可
 (由于程序原理的问题，没有这个参数的话，程序会把无人机之间的距离识别为障碍物厚度，这里只影响障碍物识别，不影响测距)
 
 添加该插件到模型中后，模型便带上了UWB的**标签tag**，及其对应的**tagID**，便可以在**标签相互测距模式**中得到相互之间的测距数据。
