@@ -978,3 +978,53 @@ ___
 	- rss: 接收信号强度  单位
 	- errorEstimation: 测据误差，单位: mm
 
+#### 注意事项
+因为每一个`UWB标签`对应一个**唯一ID编号**，故
+* 要确保每一个模型的UWB插件中有唯一的 **\<tag_id>**
+
+但是1.5版本的`.sdf`文件不像ROS中的`.launch`文件一样可以进行**参数传递**
+* `.sdf`文件中的 **\<tag_id>** 是提前设定好的，并没有从外界修改参数的手段(至少我百度谷歌没找到解决方法)
+
+这意味着在启动仿真时**无法直接设定**模型的UWB标签ID
+
+怎么办呢
+
+**目前的解决方方法**是：
+
+对每个模型单独编辑创建`.sdf`文件
+
+>例如现在有 iris_0 和 iris_1 两架带多个摄像头的无人机需要配置UWB
+>
+>那就在`/model`下创建两个对应的文件夹，在里面编辑好各自的.sdf文件：
+> 
+> iris_multi_camera_0.sdf    
+> iris_multi_camera_1.sdf
+> 
+> 再在.launch启动文件中将.sdf文件对应即可
+> ```
+> <group ns="iris_0">
+>         ...
+>         <!-- PX4 SITL and vehicle spawn -->
+>         <include file="$(find px4)/launch/single_vehicle_spawn_xtd.launch">
+>             ...
+>             <arg name="sdf" value="iris_multi_camera_0"/>
+>             ...
+>         </include>
+>         ...
+></group>
+> 
+><group ns="iris_1">
+>         ...
+>         <!-- PX4 SITL and vehicle spawn -->
+>         <include file="$(find px4)/launch/single_vehicle_spawn_xtd.launch">
+>             ...
+>             <arg name="sdf" value="iris_multi_camera_1"/>
+>             ...
+>         </include>
+>         ...
+></group>
+> ```
+
+无人机数量少的情况下可以手动复制更改
+
+面对较多数量的无人机UWB配置，可以考虑用python等脚本文件进行该重复复制编辑等操作(待补充)
