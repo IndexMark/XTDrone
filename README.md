@@ -203,7 +203,7 @@ ___
 
 或者下我上传的这个已经删掉`build`文件的版本[百度网盘](https://pan.baidu.com/s/1XRU6vh-qW9wsJsrRf4U3oA?pwd=2233)
 ___
-下载好后，解压放在` ～/`目录下(打开终端，输入`pwd`，显示的就是` ～/`目录)
+下载好后，解压放在` ～/`目录下(解压出来为PX4_Firmware_13的话，就重命名为PX4_Firmware，打开终端，输入`pwd`，显示的就是` ～/`目录)
 
 打开终端，进入文件夹进行编译
 ```
@@ -218,7 +218,7 @@ gedit .bashrc
 ```
 在**文档最后**加入以下代码，注意路径匹配，前两个source顺序不能颠倒，一个是**工作空间**，一个是**PX4**
 ```
-source ~/catkin_ws/devel/setup.bash
+source ~/xtdrone_ws/devel/setup.bash
 source ~/PX4_Firmware/Tools/setup_gazebo.bash ~/PX4_Firmware/ ~/PX4_Firmware/build/px4_sitl_default
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/PX4_Firmware
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/PX4_Firmware/Tools/sitl_gazebo
@@ -228,7 +228,10 @@ export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/PX4_Firmware/Tools/sitl_gazebo
 source ~/.bashrc
 ```
 然后运行如下命令，此时会启动Gazebo，会有相应界面显示
-
+```
+cd ~/PX4_Firmware
+roslaunch px4 mavros_posix_sitl.launch
+```
 并在新终端执行
 ```
 rostopic echo /mavros/state
@@ -236,6 +239,8 @@ rostopic echo /mavros/state
 若connected: True,则说明MAVROS与SITL通信成功
 
 如果是false，一般是因为.bashrc里的路径写的不对，请仔细检查
+**(实际这里暂不影响目前的功能使用，可先跳过，后续走不通再回来检查)**
+
 ```
 ---
 header:
@@ -253,7 +258,7 @@ system_status: 3
 ---
 ```
 
-**(实际这里暂不影响目前的功能使用，可先跳过，后续走不通再回来检查)**
+
 #### 3.安装地面站QGroundControl
 * 点此[安装链接](https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html)
 * 后续**固定翼**要打开地面站，通讯正常连接的情况下才能起飞
