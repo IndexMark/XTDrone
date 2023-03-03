@@ -212,9 +212,9 @@ make px4_sitl_default gazebo
 ```
 编译完成后，会弹出Gazebo界面，将其关闭即可
 #### 2.添加环境变量
-修改 ~/.bashrc
+打开一个新终端，修改 ~/.bashrc文件
 ```
-gedit .bashrc
+gedit ~/.bashrc
 ```
 在**文档最后**加入以下代码，注意路径匹配，前两个source顺序不能颠倒，一个是**工作空间**，一个是**PX4**
 ```
