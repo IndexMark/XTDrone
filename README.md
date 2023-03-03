@@ -374,11 +374,6 @@ ___
 
 2. 用键盘控制无人机飞行
 
-	在一个终端运行
-	```
-	cd ~/PX4_Firmware
-	roslaunch px4 indoor1.launch
-	```
 -   注意，用ctrl+c关闭仿真进程，有可能没有把Gazebo的相关进程关干净，这样再启动仿真时可能会报错
 -  可以先关闭Gazebo，再ctrl+c关闭终端进程
 - 如果出现这种情况，可以用killall -9 gzclient，killall -9 gzserver 这两个命令强行关闭gazebo所有进程。
